@@ -11,7 +11,7 @@ API_KEY = os.getenv("BITGET_API_KEY")
 SECRET_KEY = os.getenv("BITGET_SECRET_KEY")
 PASSPHRASE = os.getenv("BITGET_PASSPHRASE")
 
-SYMBOL = "BTC-USDT"  # Helyes formátum
+SYMBOL = "BTCUSDT"  # Helyes formátum
 
 def on_message(ws, message):
     data = json.loads(message)
