@@ -11,13 +11,11 @@ API_KEY = os.getenv("BITGET_API_KEY")
 SECRET_KEY = os.getenv("BITGET_SECRET_KEY")
 PASSPHRASE = os.getenv("BITGET_PASSPHRASE")
 
-SYMBOL = "btcusdt"
-TRADE_AMOUNT = 0.001
+SYMBOL = "BTC-USDT"  # Helyes formátum
 
 def on_message(ws, message):
     data = json.loads(message)
     print("Tick adat:", data)
-    # Itt jöhetne a stratégia, de most csak kiíratjuk a tickeket
 
 def on_open(ws):
     print("Websocket kapcsolódva.")
