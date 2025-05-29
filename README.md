@@ -1,13 +1,6 @@
-# Bitget Futures Signál Bot
+# Bitget Futures Signál Bot - Email verzió
 
-Ez a bot automatikusan elemzi a legnagyobb forgalmú USDT futures párokat 30m és 1h timeframe-en.  
-Alap RSI + EMA stratégia alapján LONG/SHORT jelzést ad, SL/TP szintekkel.
+Ez a verzió a Bitget USDT-margined futures párokat elemzi RSI+EMA alapján.
+Ha setupot talál, automatikusan emailt küld a megadott címre.
 
-## Vizsgált párok:
-- BTCUSDT
-- ETHUSDT
-- SOLUSDT
-- XRPUSDT
-- DOGEUSDT
-
-## Railway deploy-ready!
+Railway deploy-ready.

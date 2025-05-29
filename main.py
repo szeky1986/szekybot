@@ -1,13 +1,39 @@
 import requests
 import time
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
-print("Bitget Futures Signál Bot indul...")
+print("Bitget Futures Signál Bot (Email verzió) indul...")
 
 API_URL = "https://api.bitget.com"
 SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT"]
 TIMEFRAMES = ["30m", "1h"]
 LIMIT = 100
+
+EMAIL_SENDER = "szekyke11@gmail.com"
+EMAIL_PASSWORD = "brava123456789"
+EMAIL_RECEIVER = "szek_l@hotmail.com"
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+
+def send_email(subject, body):
+    try:
+        msg = MIMEMultipart()
+        msg["From"] = EMAIL_SENDER
+        msg["To"] = EMAIL_RECEIVER
+        msg["Subject"] = subject
+        msg.attach(MIMEText(body, "plain"))
+
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        print(f"Email elküldve: {subject}")
+    except Exception as e:
+        print("Hiba történt email küldés közben:", e)
 
 def get_kline(symbol, interval):
     url = f"{API_URL}/api/mix/v1/market/candles?symbol={symbol}&granularity={interval}&productType=umcbl"
@@ -42,9 +68,8 @@ def check_entry(symbol, tf):
     if not candles or len(candles) < 60:
         return
 
-    closes = [c[4] for c in candles]  # closing prices
+    closes = [c[4] for c in candles]
     last_close = float(closes[0])
-
     rsi = calculate_rsi(closes[:15])
     ema = calculate_ema(closes[:50])
 
@@ -57,8 +82,19 @@ def check_entry(symbol, tf):
     if direction:
         sl = round(last_close * (0.985 if direction == "LONG" else 1.015), 4)
         tp = round(last_close * (1.03 if direction == "LONG" else 0.97), 4)
-        print(f"[{tf}] {symbol}: {direction} jelzés")
-        print(f"Belépés: {last_close} | SL: {sl} | TP: {tp} | RSI: {round(rsi,2)} | EMA: {round(ema,2)}\n")
+        subject = f"Bitget Jelzés - {direction} {symbol}"
+        body = f"""
+Idő: {datetime.utcnow().isoformat()} UTC
+Pár: {symbol}
+Irány: {direction}
+Timeframe: {tf}
+Belépő: {last_close}
+SL: {sl}
+TP: {tp}
+RSI: {round(rsi,2)}
+EMA: {round(ema,2)}
+        """.strip()
+        send_email(subject, body)
 
 if __name__ == "__main__":
     print(f"Futtatás időpontja: {datetime.utcnow().isoformat()} UTC")
