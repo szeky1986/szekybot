@@ -5,7 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
-print("Bitget Top20 Futures Email Bot - Loop verzió indul...")
+print("Bitget Top20 Futures Email Bot - Javított Loop verzió indul...")
 
 API_URL = "https://api.bitget.com"
 SYMBOLS = ["ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT",
@@ -111,6 +111,5 @@ def run_bot():
 if __name__ == "__main__":
     while True:
         run_bot()
-        print("Várakozás 30 percig...
-")
+        print("Várakozás 30 percig...")
         time.sleep(1800)
