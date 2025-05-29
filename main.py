@@ -1,54 +1,72 @@
-import time
-import hmac
-import hashlib
-import base64
 import requests
-from datetime import datetime, timezone
+import time
+from datetime import datetime
 
-# Bitget API kulcsok (beégetve a kódba)
-API_KEY = "bg_9909f94555b2a1f6bb15c0d2f68d2c07"
-API_SECRET = "93dcd38fa3024ae574a74a528b9f749766f8255a1f03e433f55bb04c3063bf28"
-API_PASSPHRASE = "Mollyka8631"
+print("Bitget Futures Signál Bot indul...")
 
-BASE_URL = "https://api.bitget.com"
-REQUEST_PATH = "/api/spot/v1/account/assets"
-METHOD = "GET"
-BODY = ""
+API_URL = "https://api.bitget.com"
+SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT"]
+TIMEFRAMES = ["30m", "1h"]
+LIMIT = 100
 
-def get_timestamp():
-    # ISO8601 formátum (pl. 2023-12-12T12:12:12.123Z)
-    return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace("+00:00", "Z")
+def get_kline(symbol, interval):
+    url = f"{API_URL}/api/mix/v1/market/candles?symbol={symbol}&granularity={interval}&productType=umcbl"
+    response = requests.get(url)
+    return response.json()["data"]
 
-def generate_signature(timestamp, method, request_path, body):
-    pre_sign = f"{timestamp}{method.upper()}{request_path}{body}"
-    signature = hmac.new(
-        API_SECRET.encode("utf-8"),
-        pre_sign.encode("utf-8"),
-        hashlib.sha256
-    ).digest()
-    return base64.b64encode(signature).decode()
+def calculate_rsi(closes, period=14):
+    gains, losses = [], []
+    for i in range(1, period + 1):
+        delta = float(closes[i - 1]) - float(closes[i])
+        if delta > 0:
+            gains.append(delta)
+        else:
+            losses.append(abs(delta))
+    avg_gain = sum(gains) / period
+    avg_loss = sum(losses) / period
+    if avg_loss == 0:
+        return 100
+    rs = avg_gain / avg_loss
+    return 100 - (100 / (1 + rs))
 
-def get_account_info():
-    timestamp = get_timestamp()
-    signature = generate_signature(timestamp, METHOD, REQUEST_PATH, BODY)
+def calculate_ema(closes, period=50):
+    closes = list(map(float, closes[:period]))
+    k = 2 / (period + 1)
+    ema = closes[0]
+    for price in closes[1:]:
+        ema = price * k + ema * (1 - k)
+    return ema
 
-    headers = {
-        "ACCESS-KEY": API_KEY,
-        "ACCESS-SIGN": signature,
-        "ACCESS-TIMESTAMP": timestamp,
-        "ACCESS-PASSPHRASE": API_PASSPHRASE,
-        "Content-Type": "application/json"
-    }
+def check_entry(symbol, tf):
+    candles = get_kline(symbol, tf)
+    if not candles or len(candles) < 60:
+        return
 
-    url = f"{BASE_URL}{REQUEST_PATH}"
-    response = requests.get(url, headers=headers)
-    return response.json()
+    closes = [c[4] for c in candles]  # closing prices
+    last_close = float(closes[0])
+
+    rsi = calculate_rsi(closes[:15])
+    ema = calculate_ema(closes[:50])
+
+    direction = None
+    if rsi < 30 and last_close > ema:
+        direction = "LONG"
+    elif rsi > 70 and last_close < ema:
+        direction = "SHORT"
+
+    if direction:
+        sl = round(last_close * (0.985 if direction == "LONG" else 1.015), 4)
+        tp = round(last_close * (1.03 if direction == "LONG" else 0.97), 4)
+        print(f"[{tf}] {symbol}: {direction} jelzés")
+        print(f"Belépés: {last_close} | SL: {sl} | TP: {tp} | RSI: {round(rsi,2)} | EMA: {round(ema,2)}\n")
 
 if __name__ == "__main__":
-    print("Bitget teszt bot indul (v2 API)...")
-    try:
-        result = get_account_info()
-        print("Kapcsolat sikeres! Fiók információ:")
-        print(result)
-    except Exception as e:
-        print("Hiba történt a kapcsolat során:", e)
+    print(f"Futtatás időpontja: {datetime.utcnow().isoformat()} UTC")
+    for tf in TIMEFRAMES:
+        print(f"--- {tf} timeframe vizsgálat ---")
+        for sym in SYMBOLS:
+            try:
+                check_entry(sym, tf)
+                time.sleep(0.5)
+            except Exception as e:
+                print(f"Hiba {sym} - {tf} elemzésekor: {e}")

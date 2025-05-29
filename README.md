@@ -1,9 +1,13 @@
-# Bitget Teszt Bot (v2 API, BASE64 Signature, ISO Timestamp)
+# Bitget Futures Signál Bot
 
-Ez a verzió az új Bitget API szabványt követi:
+Ez a bot automatikusan elemzi a legnagyobb forgalmú USDT futures párokat 30m és 1h timeframe-en.  
+Alap RSI + EMA stratégia alapján LONG/SHORT jelzést ad, SL/TP szintekkel.
 
-- ISO8601 timestamp (pl. 2023-12-12T12:12:12.123Z)
-- HMAC-SHA256 aláírás, base64 kódolással
-- V2 API kompatibilis header és útvonal
+## Vizsgált párok:
+- BTCUSDT
+- ETHUSDT
+- SOLUSDT
+- XRPUSDT
+- DOGEUSDT
 
-⚠️ Privát kulcsok be vannak égetve! Csak saját célra használd!
+## Railway deploy-ready!
