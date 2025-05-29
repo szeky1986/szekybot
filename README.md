@@ -1,6 +1,8 @@
-# Bitget Futures Signál Bot - Email verzió
+# Bitget Top 20 Futures Email Bot - Automatikus futtatás
 
-Ez a verzió a Bitget USDT-margined futures párokat elemzi RSI+EMA alapján.
-Ha setupot talál, automatikusan emailt küld a megadott címre.
+- RSI + EMA stratégia
+- 30m és 1h timeframe
+- Email értesítés ha belépési jelzés van
+- Folyamatosan fut Railway-en, 30 percenként újra lefut
 
-Railway deploy-ready.
+Deploy-ready ZIP!

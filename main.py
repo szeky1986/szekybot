@@ -5,12 +5,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
-print("Bitget Futures Signál Bot (Email verzió) indul...")
+print("Bitget Top20 Futures Email Bot - Loop verzió indul...")
 
 API_URL = "https://api.bitget.com"
-SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT"]
+SYMBOLS = ["ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT",
+           "DOTUSDT", "SHIBUSDT", "LINKUSDT", "MATICUSDT", "UNIUSDT", "LTCUSDT", "BCHUSDT",
+           "NEARUSDT", "APTUSDT", "ATOMUSDT", "XLMUSDT", "IMXUSDT", "INJUSDT"]
 TIMEFRAMES = ["30m", "1h"]
-LIMIT = 100
 
 EMAIL_SENDER = "szekyke11@gmail.com"
 EMAIL_PASSWORD = "brava123456789"
@@ -96,13 +97,20 @@ EMA: {round(ema,2)}
         """.strip()
         send_email(subject, body)
 
-if __name__ == "__main__":
-    print(f"Futtatás időpontja: {datetime.utcnow().isoformat()} UTC")
+def run_bot():
+    print(f"Futtatás: {datetime.utcnow().isoformat()} UTC")
     for tf in TIMEFRAMES:
-        print(f"--- {tf} timeframe vizsgálat ---")
+        print(f"--- {tf} vizsgálat ---")
         for sym in SYMBOLS:
             try:
                 check_entry(sym, tf)
                 time.sleep(0.5)
             except Exception as e:
-                print(f"Hiba {sym} - {tf} elemzésekor: {e}")
+                print(f"Hiba {sym}/{tf}: {e}")
+
+if __name__ == "__main__":
+    while True:
+        run_bot()
+        print("Várakozás 30 percig...
+")
+        time.sleep(1800)
