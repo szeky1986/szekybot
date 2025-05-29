@@ -1,13 +1,12 @@
-import os
 import time
 import hmac
 import hashlib
 import requests
 
-# Bitget API info (beállítandó Railway-en env-ként)
-API_KEY = os.getenv("BITGET_API_KEY")
-API_SECRET = os.getenv("BITGET_API_SECRET")
-API_PASSPHRASE = os.getenv("BITGET_API_PASSPHRASE")
+# Bitget API info (beégetve a kódba)
+API_KEY = "bg_9909f94555b2a1f6bb15c0d2f68d2c07"
+API_SECRET = "93dcd38fa3024ae574a74a528b9f749766f8255a1f03e433f55bb04c3063bf28"
+API_PASSPHRASE = "Mollyka8631"
 
 BASE_URL = "https://api.bitget.com"
 
