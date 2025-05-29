@@ -1,6 +1,6 @@
-# Bitget Teszt Bot Railway-re
+# Bitget Teszt Bot Railway-re (javított verzió)
 
-Ez a kis Python script Bitget API kapcsolatot tesztel. Használja a `/account/assets` végpontot, hogy visszaadja az egyenlegedet.
+Ez a kis Python script Bitget API kapcsolatot tesztel a spot számla alapján.
 
 ## Beállítás
 

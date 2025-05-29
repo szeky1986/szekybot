@@ -25,7 +25,7 @@ def generate_signature(timestamp, method, request_path, body):
 def get_account_info():
     timestamp = get_timestamp()
     method = "GET"
-    request_path = "/api/v2/account/assets"
+    request_path = "/api/spot/v1/account/assets"
     body = ""
 
     signature = generate_signature(timestamp, method, request_path, body)
