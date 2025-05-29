@@ -1,10 +1,9 @@
-# Bitget Teszt Bot Railway-re (javított signature)
+# Bitget Teszt Bot (v2 API, BASE64 Signature, ISO Timestamp)
 
-Ez a kis Python script Bitget API kapcsolatot tesztel a spot számla alapján, javított aláírási módszerrel.
+Ez a verzió az új Bitget API szabványt követi:
 
-⚠️ FIGYELEM: Az API kulcsok be vannak égetve a kódba. Csak privát használatra ajánlott!
+- ISO8601 timestamp (pl. 2023-12-12T12:12:12.123Z)
+- HMAC-SHA256 aláírás, base64 kódolással
+- V2 API kompatibilis header és útvonal
 
-## Használat
-
-1. Töltsd fel GitHubra.
-2. Railway-en csak deploy — nem kell környezeti változó.
+⚠️ Privát kulcsok be vannak égetve! Csak saját célra használd!
