@@ -1,45 +1,52 @@
 import os
 import time
-import json
 import hmac
 import hashlib
-import websocket
-import threading
+import requests
 
-# Környezeti változók betöltése Railway-hez
+# Bitget API info (beállítandó Railway-en env-ként)
 API_KEY = os.getenv("BITGET_API_KEY")
-SECRET_KEY = os.getenv("BITGET_SECRET_KEY")
-PASSPHRASE = os.getenv("BITGET_PASSPHRASE")
+API_SECRET = os.getenv("BITGET_API_SECRET")
+API_PASSPHRASE = os.getenv("BITGET_API_PASSPHRASE")
 
-SYMBOL = "BTCUSDT"  # Helyes formátum
+BASE_URL = "https://api.bitget.com"
 
-def on_message(ws, message):
-    data = json.loads(message)
-    print("Tick adat:", data)
+def get_timestamp():
+    return str(int(time.time() * 1000))
 
-def on_open(ws):
-    print("Websocket kapcsolódva.")
-    sub_params = {
-        "op": "subscribe",
-        "args": [f"spot/ticker:{SYMBOL}"]
+def generate_signature(timestamp, method, request_path, body):
+    message = f"{timestamp}{method}{request_path}{body}"
+    return hmac.new(
+        bytes(API_SECRET, "utf-8"),
+        msg=bytes(message, "utf-8"),
+        digestmod=hashlib.sha256
+    ).hexdigest()
+
+def get_account_info():
+    timestamp = get_timestamp()
+    method = "GET"
+    request_path = "/api/v2/account/assets"
+    body = ""
+
+    signature = generate_signature(timestamp, method, request_path, body)
+
+    headers = {
+        "ACCESS-KEY": API_KEY,
+        "ACCESS-SIGN": signature,
+        "ACCESS-TIMESTAMP": timestamp,
+        "ACCESS-PASSPHRASE": API_PASSPHRASE,
+        "Content-Type": "application/json"
     }
-    ws.send(json.dumps(sub_params))
 
-def on_error(ws, error):
-    print("Hiba:", error)
-
-def on_close(ws, close_status_code, close_msg):
-    print("Websocket zárva.")
-
-def start_ws():
-    ws_url = "wss://ws.bitget.com/spot/v1/stream"
-    ws = websocket.WebSocketApp(ws_url,
-                                on_open=on_open,
-                                on_message=on_message,
-                                on_error=on_error,
-                                on_close=on_close)
-    ws.run_forever()
+    url = f"{BASE_URL}{request_path}"
+    response = requests.get(url, headers=headers)
+    return response.json()
 
 if __name__ == "__main__":
-    print("Bitget bot indul...")
-    threading.Thread(target=start_ws).start()
+    print("Bitget teszt bot indul...")
+    try:
+        result = get_account_info()
+        print("Kapcsolat sikeres! Fiók információ:")
+        print(result)
+    except Exception as e:
+        print("Hiba történt a kapcsolat során:", e)
