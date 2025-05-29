@@ -1,6 +1,6 @@
-# Bitget Teszt Bot Railway-re (beégetett kulcsokkal)
+# Bitget Teszt Bot Railway-re (javított signature)
 
-Ez a kis Python script Bitget API kapcsolatot tesztel a spot számla alapján.
+Ez a kis Python script Bitget API kapcsolatot tesztel a spot számla alapján, javított aláírási módszerrel.
 
 ⚠️ FIGYELEM: Az API kulcsok be vannak égetve a kódba. Csak privát használatra ajánlott!
 

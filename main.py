@@ -14,12 +14,13 @@ def get_timestamp():
     return str(int(time.time() * 1000))
 
 def generate_signature(timestamp, method, request_path, body):
-    message = f"{timestamp}{method}{request_path}{body}"
-    return hmac.new(
-        bytes(API_SECRET, "utf-8"),
-        msg=bytes(message, "utf-8"),
+    prehash = f"{timestamp}{method.upper()}{request_path}{body}"
+    signature = hmac.new(
+        API_SECRET.encode("utf-8"),
+        prehash.encode("utf-8"),
         digestmod=hashlib.sha256
     ).hexdigest()
+    return signature
 
 def get_account_info():
     timestamp = get_timestamp()
